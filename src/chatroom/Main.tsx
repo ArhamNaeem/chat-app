@@ -11,8 +11,8 @@ export default function Main() {
       {/* <button onClick={() => <CreateRoom />}>Create room</button> */}
       {/* <button>Enter chat</button> */}
       {/* <CreateRoom userAuth={isAuth} setIsAuth={setIsAuth} /> */}
-      {/* <EnterChat userAuth={isAuth} setIsAuth={setIsAuth} /> */}
-      <OnlineChatrooms/>
+      <EnterChat userAuth={isAuth} setIsAuth={setIsAuth} />
+      {/* <OnlineChatrooms/> */}
     </>
   );
 }

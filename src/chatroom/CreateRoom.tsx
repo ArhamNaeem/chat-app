@@ -19,7 +19,7 @@ export default function CreateRoom(props: propType) {
             try {
                 await addDoc(colRef, {
                     userId: user?.uid,
-                    room: room
+                    room
 
                 })
                 console.log('room created!')
