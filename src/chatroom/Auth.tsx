@@ -19,8 +19,13 @@ export default function Auth(props:propType) {
     }
   return (
     <>
-      <button onClick={signInWgoogle}>Sign in with google</button>
-      {/* //TODO: also add signinwithfb */}
+      <div className="text-slate-200 w-full h-screen bg-gradient-to-bl from-slate-800 via-gray-800 to-slate-900">
+        <div className='p-4 text-center border h-2/3 w-4/5 m-auto translate-y-1/4'>
+          <p className='font-semibold text-2xl'>Not signed up? No worries!</p>
+          <button className='mt-10 text-xl' onClick={signInWgoogle}>Sign in with google</button>
+        </div>
+        {/* //TODO: also add signinwithfb */}
+      </div>
     </>
-  )
+  );
 }

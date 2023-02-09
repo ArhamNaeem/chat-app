@@ -1,16 +1,19 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom';
 
 
 interface propType{
-    isRoom: boolean;
+  roomID: string;
 }
 
 export default function Chatroom(props: propType) {
-    const { isRoom } = props;
-    return isRoom?
-  (
+  //props being sent via useNavigate(state:{props})
+  const location = useLocation();
+  const propsFromNavigation = location.state;
+    return (
     <>
-      room
+        
+        {(propsFromNavigation)}
     </>
-  ): <></>
+  )
 }
