@@ -1,8 +1,10 @@
 import React, { createRef, FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation , useNavigate} from 'react-router-dom';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { useAuthState, useSignOut } from 'react-firebase-hooks/auth';
 import { addDoc, collection, onSnapshot, orderBy, query, serverTimestamp, where } from 'firebase/firestore';
-import { db,auth } from '../config/firebase';
+import { db, auth } from '../config/firebase';
+import Cookies from "universal-cookie/es6";
+const cookies = new Cookies();
 interface propType{
   roomID: string;
 }
@@ -43,7 +45,10 @@ export default function Chatroom(props: propType) {
        textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
      }
   };
-  const goToHome = () => {
+  //TODO: RECHECK IT
+  const signOut = () => {
+    useSignOut(auth);
+    cookies.remove('auth-tokens')
     navigate("/");
   };
 
@@ -95,22 +100,19 @@ export default function Chatroom(props: propType) {
             Room id: {room}
           </h1>
           <button
-          onClick={goToHome}
-            className="border border-slate-700 w-20 h-10 my-2 rounded-lg shadow-black shadow-lg active:text-slate-400">
-            Home
+            onClick={signOut}
+            className="border border-slate-700 w-20 h-10 my-2 rounded-lg  active:text-slate-400"
+          >
+            Sign out
           </button>
         </div>
-        {messeges.length == 0 ?
-          (
+        {messeges.length == 0 ? (
           <div className="w-full text-3xl h-4/5 resize-none font-semibold  outline-none bg-transparent scroll-smooth text-center pt-32">
-              {isLoading ? 'Loading...' :
-                'No messeges yet..'
-         
-        }
+            {isLoading ? "Loading..." : "No messeges yet.."}
           </div>
         ) : (
           <textarea
-            className="w-full rounded-lg border border-slate-700 p-4 text-xl h-4/5 resize-none t outline-none bg-transparent scroll-smooth"
+            className="w-full md:w-3/4 md:translate-x-24 lg:translate-x-36 md:p-10 md:pt-4 rounded-lg border border-slate-700 p-4 text-xl  h-3/4 md:h-4/5 resize-none t outline-none bg-transparent scroll-smooth"
             readOnly
             ref={textareaRef}
             value={messeges
@@ -125,15 +127,17 @@ export default function Chatroom(props: propType) {
           />
         )}
         <form onSubmit={handleChange}>
-          <input
-            className="w-5/6  outline-none bg-slate-800 h-9 p-5 border border-slate-500 rounded-lg  focus:border-slate-700 mx-4"
-            onChange={(e) => setMsg(e.target.value)}
-            value={msg}
-            placeholder="Enter text..."
-          />
-          <button className="text-lg  active:text-slate-400" type="submit">
-            Send
-          </button>
+          <div className="w-full flex p-2">
+            <input
+              className="w-5/6 md:w-2/3  md:ml-24 lg:ml-44  outline-none bg-slate-800 h-9 p-5 border border-slate-500 rounded-lg  focus:border-slate-700 mx-4"
+              onChange={(e) => setMsg(e.target.value)}
+              value={msg}
+              placeholder="Enter text..."
+            />
+            <button className="text-lg  active:text-slate-400" type="submit">
+              Send
+            </button>
+          </div>
         </form>
       </div>
     </>

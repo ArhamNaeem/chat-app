@@ -38,7 +38,7 @@ useEffect(() => {
 
   return (
     <>
-      <div className=" mr-5 mt-10 h-4/5 text-white  shadow-lg shadow-black w-2/5 text-center ">
+      <div className="md:mt-18 mr-5 mt-10 h-4/5 text-white  shadow-lg shadow-black w-2/5 text-center ">
         <p className=" m-auto text-2xl  border-white w-4/5 font-semibold mb-5">
           Online Rooms
         </p>
