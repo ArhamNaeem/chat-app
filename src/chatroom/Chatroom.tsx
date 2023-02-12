@@ -1,11 +1,15 @@
-import React, { createRef, FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import React, { createRef, Dispatch, FormEvent, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation , useNavigate} from 'react-router-dom';
-import { useAuthState, useSignOut } from 'react-firebase-hooks/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { signOut } from 'firebase/auth';
+import Filter from 'bad-words'
 import { addDoc, collection, onSnapshot, orderBy, query, serverTimestamp, where } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
+import { useContext } from 'react';
+import { AuthContext } from '../App';
 import Cookies from "universal-cookie/es6";
 const cookies = new Cookies();
-interface propType{
+interface propType {
   roomID: string;
 }
 
@@ -18,43 +22,51 @@ interface msgType{
   id: string;
 }
 
-export default function Chatroom(props: propType) {
+export default function Chatroom(props:propType) {
   const [user] = useAuthState(auth);
   //props being sent via useNavigate(state:{props})
   const location = useLocation();
   const room = location.state;
   const navigate = useNavigate();
   let textareaRef = useRef<HTMLTextAreaElement>(null);
+  const setIsAuth = useContext(AuthContext)?.setUserAuth;
   const [msg, setMsg] = useState("");
   const [messeges, setMesseges] = useState<msgType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const colRef = collection(db, "messeges");
+
   const handleChange = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!msg) return;
     setMsg("");
-   
+    let filter = new Filter();
+    const filteredMsg = filter.clean(msg);
     await addDoc(colRef, {
       userID: user?.uid,
       name: user?.displayName,
       deliverTime: serverTimestamp(),
       room,
-      msg,
+      msg:filteredMsg,
     });
-     if (textareaRef.current) {
-       textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
-     }
+    if (textareaRef.current) {
+      textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+    }
   };
-  //TODO: RECHECK IT
-  const signOut = () => {
-    useSignOut(auth);
-    cookies.remove('auth-tokens')
+  const signUserOut = async () => {
+    await signOut(auth);
+    cookies.remove("auth-token");
+    if (setIsAuth) {
+      setIsAuth(false);
+    }
     navigate("/");
   };
 
   useEffect(() => {
-    
-    const msgQuery = query(colRef, where("room", '==', room),orderBy("deliverTime"));
+    const msgQuery = query(
+      colRef,
+      where("room", "==", room),
+      orderBy("deliverTime")
+    );
     const unsubscribe = onSnapshot(msgQuery, (snapshot) => {
       let messeges: msgType[] = [];
       snapshot.forEach((doc) => {
@@ -62,27 +74,22 @@ export default function Chatroom(props: propType) {
         const { deliverTime, msg, name, room, userID } = doc.data();
         const id = doc.id;
         messeges.push({ deliverTime, msg, name, room, userID, id });
-      })
+      });
       setMesseges(messeges);
     });
-      // this.scrollToBottom();
-   
-    return () => 
-      unsubscribe();
+    // this.scrollToBottom();
 
-  }, [])
-
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (messeges.length == 0) {
-     setTimeout(() => {
-       setIsLoading(false);
-     }, 5000);
-   }
-  }, [messeges])
-  
-  
-  
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 5000);
+    }
+  }, [messeges]);
+
   return (
     <>
       <div
@@ -100,7 +107,7 @@ export default function Chatroom(props: propType) {
             Room id: {room}
           </h1>
           <button
-            onClick={signOut}
+            onClick={signUserOut}
             className="border border-slate-700 w-20 h-10 my-2 rounded-lg  active:text-slate-400"
           >
             Sign out

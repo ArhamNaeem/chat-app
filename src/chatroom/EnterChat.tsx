@@ -1,16 +1,17 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import Chatroom from './Chatroom';
 import { db } from '../config/firebase'
+import { useContext } from 'react';
+import { AuthContext } from '../App';
 import {useNavigate} from 'react-router-dom'
 import { collection, getDocs, query,where } from 'firebase/firestore'
 import Auth from './Auth';
 import OnlineChatrooms from './OnlineChatrooms';
-    interface propType {
-      userAuth: boolean;
-      setIsAuth: Dispatch<SetStateAction<boolean>>;
-    }
-export default function EnterChat(props:propType) {
-    const { userAuth, setIsAuth } = props;
+
+export default function EnterChat() {
+  const userAuth = useContext(AuthContext)?.userAuth;
+  // const setUserAuth = useContext(AuthContext)?.setUserAuth;
+
     const colRef = collection(db, 'chatroom');
   const room = useRef("");
   const [showPopup, setShowPopup] = useState(false);
@@ -32,7 +33,7 @@ export default function EnterChat(props:propType) {
                 console.log('error, room doesnt exist')
           
             } else {
-                navigate('/chat-room',{state: room.current})
+              navigate('/chat-room', { state: room.current })
             }
         } catch (e) {
               setStatement(`Error occurred`);
@@ -80,6 +81,6 @@ export default function EnterChat(props:propType) {
         </div>
       </>
     ) : (
-      <Auth setIsAuth={setIsAuth} />
+      <Auth/>
     );
 }
