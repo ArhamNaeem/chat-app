@@ -1,53 +1,15 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import Chatroom from './Chatroom';
-import { db } from '../config/firebase'
 import { useContext } from 'react';
 import { AuthContext } from '../App';
-import {useNavigate} from 'react-router-dom'
-import { collection, getDocs, query,where } from 'firebase/firestore'
+import { useEnterChat } from '../custom-hooks/useEnterChat';
 import Auth from './Auth';
 import OnlineChatrooms from './OnlineChatrooms';
 
 export default function EnterChat() {
   const userAuth = useContext(AuthContext)?.userAuth;
-  // const setUserAuth = useContext(AuthContext)?.setUserAuth;
-
-    const colRef = collection(db, 'chatroom');
   const room = useRef("");
-  const [showPopup, setShowPopup] = useState(false);
-  const [statement, setStatement] = useState("");
-
-  const navigate = useNavigate();
-    const validate = async() => {
-      if (room.current === "") {
-           setStatement(`Please enter room id`);
-        setShowPopup(true);
-        return;
-      }
-        try {
-            const docQuery = query(colRef, where('room', '==', room.current));
-            const doc =await getDocs(docQuery);
-            if (doc.empty) {
-              setStatement(`No such room with id ${room.current} exist`)
-              setShowPopup(true)
-                console.log('error, room doesnt exist')
-          
-            } else {
-              navigate('/chat-room', { state: room.current })
-            }
-        } catch (e) {
-              setStatement(`Error occurred`);
-              setShowPopup(true);
-            // console.log(e);
-         }
-  }
-  useEffect(() => {
-    setTimeout(() => {
-      setShowPopup(false);
-    }, 1000);
-  }, [showPopup]);
-  
-
+  const { validate,showPopup,statement } = useEnterChat();
     return userAuth ? (
       <>
         <div
@@ -71,7 +33,8 @@ export default function EnterChat() {
               />
               <button
                 className="rounded-lg shadow-lg shadow-black mx-4 w-1/2 h-1/4 text-xl mt-10 ease-linear transition-all duration-200  hover:scale-110"
-                onClick={validate}
+                
+                onClick={()=>{validate(room.current)}}
               >
                 Enter chat
               </button>

@@ -4,7 +4,7 @@ import { AuthContext } from '../App';
 import { useAuthHook } from '../custom-hooks/useAuthHook';
 export default function Auth() {
   const setIsAuth = useContext(AuthContext)?.setUserAuth;
-  const [signInWfacebook,signInWgoogle] = useAuthHook(setIsAuth)
+  const { signInWfacebook, signInWgoogle } = useAuthHook(setIsAuth)
 
   return (
     <>

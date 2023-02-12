@@ -1,41 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { getDocs, collection, query,where } from 'firebase/firestore'
 import { db } from '../config/firebase'
+import { useOnlineChatrooms } from '../custom-hooks/useOnlineChatrooms'
 interface type{
     room: string;
     userId: string;
 }
 export default function OnlineChatrooms() {
-    const colRef = collection(db, 'chatroom');
-    const [onlineRooms,setOnlineRooms]= useState<type[]>([])
-    const getOnlineRooms =async ()=>{
-      //to get all the chatrooms
-        const fetchQuery = query(colRef, where('room', '!=', null));
-        const document = await getDocs(fetchQuery);
-        const newData = document.docs.map((doc) => {
-            return {
-                room: doc.data().room,
-                userId: doc.data().userId
-            }
-        })
-        // console.log(newData,onlineRooms)
-        if (JSON.stringify(onlineRooms) !== JSON.stringify([...newData])) {
-            setOnlineRooms([...newData])
-        }
-    }
-
-    
-
-useEffect(() => {
-  getOnlineRooms()
-
+const textareaRef = useRef<HTMLTextAreaElement>(null);
+const [onlineRooms, setOnlineRooms] = useState<type[]>([]);
+  const { toggleScroll } = useOnlineChatrooms(onlineRooms, setOnlineRooms, textareaRef.current);
   
-}, [onlineRooms])
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const hideScroll = () => {
-      textareaRef.current?.classList.toggle('overflow-hidden')
-    }
-
   return (
     <>
       <div className="md:mt-18 mr-5 mt-10 h-4/5 text-white  shadow-lg shadow-black w-2/5 text-center ">
@@ -53,7 +28,7 @@ useEffect(() => {
             value={onlineRooms
               .map((room) => `Room ID: ${room.room}\n\n`)
               .join("")}
-            onClick={hideScroll}
+            onClick={toggleScroll}
           />
         )}
       </div>

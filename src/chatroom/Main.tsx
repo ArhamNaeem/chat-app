@@ -23,7 +23,6 @@ export default function Main() {
             Enter chat
           </button>
         </div>
-        {/* <OnlineChatrooms /> */}
       </div>
     </>
   );

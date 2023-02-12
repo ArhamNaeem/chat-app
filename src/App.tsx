@@ -35,7 +35,7 @@ function App() {
                 <EnterChat />
               }
             />
-            <Route path="/chat-room" element={<Chatroom roomID="" />} />
+            <Route path="/chat-room" element={<Chatroom />} />
           </Routes>
         </Router>
       </AuthContext.Provider>

@@ -1,49 +1,14 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import Auth from './Auth';
-import { db } from '../config/firebase';
-import { auth } from '../config/firebase';
 import { useContext } from 'react';
 import { AuthContext } from '../App';
-import { addDoc, collection } from 'firebase/firestore';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { useNavigate } from 'react-router-dom';
+import { useCreateRoom } from '../custom-hooks/useCreateRoom';
 
 
 export default function CreateRoom() {
   const userAuth = useContext(AuthContext)?.userAuth;
-  const colRef = collection(db, "chatroom");
-  const [user] = useAuthState(auth);
   const roomID = useRef("");
-  const navigate = useNavigate();
-  const [showPopup, setShowPopup] = useState(false);
-  const [statement, setStatement] = useState("");
-  const addRoom = async () => {
-    if (roomID.current === "" || roomID.current === null) {
-      setStatement(`Please enter room id`);
-      setShowPopup(true);
-      return;
-    }
-    const room = roomID?.current + "-" + crypto.randomUUID().slice(0, 3);
-    setStatement(`Creating room...`);
-    setShowPopup(true);
-    try {
-      await addDoc(colRef, {
-        userId: user?.uid,
-        room,
-      });
-      navigate("/chat-room", { state: room });
-    } catch (e) {
-      setStatement(`Error occurred`);
-
-      // console.log('Error')
-    }
-  };
-
-  useEffect(() => {
-    setTimeout(() => {
-      setShowPopup(false);
-    }, 1000);
-  }, [showPopup]);
+  const { addRoom, statement, showPopup } = useCreateRoom();
 
   return userAuth ? (
     <>
@@ -67,7 +32,7 @@ export default function CreateRoom() {
           />
           <button
             className="rounded-lg shadow-lg shadow-black mx-4 w-1/2 md:w-2/5 h-1/4 text-xl mt-10 ease-linear transition-all duration-200  hover:scale-110"
-            onClick={addRoom}
+            onClick={()=>addRoom(roomID.current)}
           >
             Create room
           </button>
