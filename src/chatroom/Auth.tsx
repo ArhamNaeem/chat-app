@@ -1,4 +1,3 @@
-import React from 'react'
 import { useContext } from 'react';
 import { AuthContext } from '../App';
 import { useAuthHook } from '../custom-hooks/useAuthHook';

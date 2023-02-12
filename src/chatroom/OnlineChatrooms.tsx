@@ -1,6 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { getDocs, collection, query,where } from 'firebase/firestore'
-import { db } from '../config/firebase'
+import  {useRef, useState } from 'react'
 import { useOnlineChatrooms } from '../custom-hooks/useOnlineChatrooms'
 interface type{
     room: string;
